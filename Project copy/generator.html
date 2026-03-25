@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Password Generator – PassGuard</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/pages.css">
+  <style>
+    .gen-wrapper { max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── Hero title ─────────────────────────────────── */
+    .gen-hero { margin-bottom: 28px; }
+    .gen-hero h2 { font-size: 2rem; color: #0f172a; }
+    .gen-hero p  { color: #374151; margin-top: 4px; }
+
+    /* ── Main layout ────────────────────────────────── */
+    .gen-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 720px;
+    }
+
+    /* ── Glass card ─────────────────────────────────── */
+    .gen-card {
+      background: rgba(255,255,255,0.88);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    .gen-card-title {
+      font-size: 1rem; font-weight: 700;
+      color: #6366f1; text-transform: uppercase;
+      letter-spacing: .06em; margin-bottom: 16px;
+    }
+
+    /* ── Mode pills ─────────────────────────────────── */
+    .mode-row {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .mode-pill {
+      padding: 6px 16px; border-radius: 20px;
+      border: 1.5px solid rgba(99,102,241,0.25);
+      background: transparent; cursor: pointer;
+      font-size: 0.85rem; font-weight: 600;
+      color: #374151; font-family: "Playfair Display", serif;
+      transition: all .2s;
+    }
+    .mode-pill.active, .mode-pill:hover {
+      background: var(--primary); color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* ── App input ──────────────────────────────────── */
+    .field-label {
+      font-size: 0.85rem; font-weight: 600; color: #374151;
+      display: block; margin-bottom: 6px;
+    }
+    .gen-input {
+      width: 100%; padding: 11px 14px; border-radius: 10px;
+      border: 1.5px solid rgba(99,102,241,0.2);
+      background: rgba(255,255,255,0.6); font-size: 0.92rem;
+      outline: none; font-family: "Playfair Display", serif;
+      transition: border-color .2s, box-shadow .2s; margin-bottom: 18px;
+      margin-top: 0;
+    }
+    .gen-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+
+    /* ── Slider ─────────────────────────────────────── */
+    .slider-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+    }
+    .slider-row input[type="range"] {
+      flex: 1; accent-color: var(--primary);
+      height: 6px; border-radius: 4px; margin-top: 0; border: none; padding: 0;
+    }
+    .length-badge {
+      min-width: 38px; text-align: center;
+      background: var(--primary); color: #fff;
+      border-radius: 8px; padding: 4px 8px;
+      font-weight: 700; font-size: 0.92rem;
+    }
+
+    /* ── Checkboxes ─────────────────────────────────── */
+    .check-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 20px;
+    }
+    .check-item {
+      display: flex; align-items: center; gap: 8px;
+      background: #f8fafc; border-radius: 10px; padding: 9px 12px;
+      cursor: pointer; border: 1.5px solid transparent;
+      transition: border-color .15s, background .15s;
+    }
+    .check-item:has(input:checked) { border-color: var(--primary); background: rgba(99,102,241,0.06); }
+    .check-item input[type="checkbox"] { width: auto; display: inline; margin: 0; accent-color: var(--primary); }
+    .check-item span { font-size: 0.85rem; font-weight: 600; color: #374151; }
+
+    /* ── Generate button ────────────────────────────── */
+    .gen-btn {
+      width: 100%; padding: 13px; border: none; border-radius: 12px;
+      background: var(--primary); color: #fff;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      font-family: "Playfair Display", serif;
+      transition: transform .2s, box-shadow .2s; margin-bottom: 20px;
+    }
+    .gen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(99,102,241,0.35); }
+
+    /* ── Password output ────────────────────────────── */
+    .pw-output-box {
+      display: none; background: #f1f5f9;
+      border-radius: 12px; padding: 16px;
+      border: 1.5px solid rgba(99,102,241,0.15); margin-bottom: 16px;
+    }
+    .pw-output-box.show { display: block; animation: fadeSlide .3s ease; }
+    @keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    .pw-text {
+      font-size: 1.1rem; font-weight: 700; color: #0f172a;
+      word-break: break-all; letter-spacing: .04em; margin-bottom: 12px;
+    }
+    .pw-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pw-action-btn {
+      padding: 7px 14px; border-radius: 8px; border: 1.5px solid rgba(99,102,241,0.3);
+      background: transparent; color: #374151; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; font-family: "Playfair Display", serif; transition: all .15s;
+    }
+    .pw-action-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .pw-action-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* Strength mini bar */
+    .mini-strength-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .mini-bar { flex: 1; height: 7px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+    .mini-bar-fill { height: 100%; border-radius: 4px; transition: width .4s, background .4s; }
+    .mini-label { font-size: 0.78rem; font-weight: 700; }
+
+    /* Entropy badge */
+    .entropy-row { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+    .entropy-chip {
+      background: #ede9fe; color: #5b21b6;
+      border-radius: 20px; padding: 3px 10px;
+      font-size: 0.75rem; font-weight: 700;
+    }
+
+    /* ── History panel ──────────────────────────────── */
+    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .history-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #f8fafc; border-radius: 10px; padding: 10px 14px;
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: background .15s;
+    }
+    .history-item:hover { background: #f1f5f9; }
+    .history-pw { font-size: 0.88rem; font-weight: 600; color: #0f172a; flex: 1; margin-right: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .history-badge { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; flex-shrink: 0; }
+    .history-badge.strong { background: #dcfce7; color: #166534; }
+    .history-badge.medium { background: #fef3c7; color: #92400e; }
+    .history-badge.weak   { background: #fee2e2; color: #991b1b; }
+    .history-copy { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 6px; }
+    .history-copy:hover { background: #e0e7ff; }
+
+    .empty-history { text-align: center; padding: 28px 0; color: #9ca3af; font-size: 0.9rem; }
+
+    /* ── Tips card ──────────────────────────────────── */
+    .tip-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .tip-item:last-child { border-bottom: none; }
+    .tip-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .tip-text { font-size: 0.85rem; color: #374151; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <h2 class="logo">
+    <a href="index.html" class="nav-brand"><i data-lucide="lock-keyhole"></i><span>PassGuard</span></a>
+  </h2>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="generator.html">Generator</a>
+    <a href="analyzer.html">Analyzer</a>
+    <a href="vault.html">Vault</a>
+  </div>
+</header>
+
+<div class="gen-wrapper">
+
+  <div class="gen-hero">
+    <h2><i data-lucide="key-round"></i> Password Generator</h2>
+    <p>Create strong, unique passwords tailored to your security needs.</p>
+  </div>
+
+  <div class="gen-layout">
+
+    <!-- LEFT: Controls -->
+    <div>
+      <div class="gen-card" style="margin-bottom:16px;">
+        <div class="gen-card-title"><i data-lucide="settings-2"></i> Generator Settings</div>
+
+        <!-- Quick Mode -->
+        <label class="field-label">Quick Mode</label>
+        <div class="mode-row" id="modeRow">
+          <button class="mode-pill active" data-mode="custom">Custom</button>
+          <button class="mode-pill" data-mode="pin">PIN (6-digit)</button>
+          <button class="mode-pill" data-mode="memorable">Memorable</button>
+          <button class="mode-pill" data-mode="maxsec">Max Security</button>
+        </div>
+
+        <!-- App Name -->
+        <label class="field-label" for="appName">Application / Website</label>
+        <input class="gen-input" type="text" id="appName" placeholder="e.g. Gmail, Netflix…">
+
+        <!-- Length slider -->
+        <label class="field-label">Password Length</label>
+        <div class="slider-row">
+          <input type="range" id="passwordLength" min="4" max="64" value="16">
+          <span class="length-badge" id="lengthValue">16</span>
+        </div>
+
+        <!-- Character options -->
+        <label class="field-label">Character Types</label>
+        <div class="check-grid">
+          <label class="check-item">
+            <input type="checkbox" id="includeUppercase" checked>
+            <span>Uppercase A–Z</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="includeLowercase" checked>
+            <span>Lowercase a–z</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="includeNumbers" checked>
+            <span>Numbers 0–9</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="includeSymbols" checked>
+            <span>Symbols !@#…</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="excludeAmbiguous">
+            <span>Skip Ambiguous (0,O,l,1)</span>
+          </label>
+        </div>
+
+        <button class="gen-btn btn-icon" id="generateBtn"><i data-lucide="zap"></i><span>Generate Password</span></button>
+
+        <!-- Output -->
+        <div class="pw-output-box" id="passwordResult">
+          <div class="entropy-row">
+            <span style="font-size:.8rem;color:#6b7280;font-weight:600;">Entropy:</span>
+            <span class="entropy-chip" id="entropyChip">—</span>
+            <span class="entropy-chip" id="crackChip" style="background:#e0f2fe;color:#0c4a6e;">—</span>
+          </div>
+          <div class="mini-strength-row">
+            <div class="mini-bar"><div class="mini-bar-fill" id="miniStrengthFill"></div></div>
+            <span class="mini-label" id="miniStrengthLabel"></span>
+          </div>
+          <div class="pw-text" id="generatedPassword"></div>
+          <div class="pw-actions">
+            <button class="pw-action-btn primary btn-icon" id="copyBtn"><i data-lucide="clipboard"></i><span>Copy</span></button>
+            <button class="pw-action-btn btn-icon" id="refreshBtn"><i data-lucide="refresh-cw"></i><span>Regenerate</span></button>
+            <button class="pw-action-btn btn-icon" id="saveBtn"><i data-lucide="save"></i><span>Save to Vault</span></button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tips -->
+      <div class="gen-card">
+        <div class="gen-card-title"><i data-lucide="lightbulb"></i> Password Tips</div>
+        <div class="tip-item"><span class="tip-icon"><i data-lucide="ruler"></i></span><span class="tip-text">Use <strong>16+ characters</strong> — length is the single biggest factor in password strength.</span></div>
+        <div class="tip-item"><span class="tip-icon"><i data-lucide="dice-5"></i></span><span class="tip-text">A truly random password beats any pattern. Let PassGuard generate it for you.</span></div>
+        <div class="tip-item"><span class="tip-icon"><i data-lucide="repeat"></i></span><span class="tip-text">Never reuse passwords across sites. Use a unique one for each service.</span></div>
+        <div class="tip-item"><span class="tip-icon"><i data-lucide="case-sensitive"></i></span><span class="tip-text">Mixing uppercase, lowercase, numbers, and symbols multiplies the search space exponentially.</span></div>
+        <div class="tip-item"><span class="tip-icon"><i data-lucide="vault"></i></span><span class="tip-text">Save generated passwords to your vault immediately so you never lose them.</span></div>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="scripts/lucide-init.js"></script>
+<script src="scripts/auth.js"></script>
+<script>requireAuth();</script>
+<script src="scripts/generator.js"></script>
+
+</body>
+</html>

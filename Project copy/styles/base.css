@@ -1,0 +1,39 @@
+:root {
+  --primary: #6366f1;
+  --secondary: #22c55e;
+  --accent: #22c55e;
+  --danger: #ef4444;
+  --dark: #0f172a;
+  --light: #f8fafc;
+  --bg: #f3f4f6;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --radius: 12px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Playfair Display", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+
+}
+
+body {
+  background: linear-gradient(135deg, #746df1, #6bffdf);
+  min-height: 100vh;
+  background-attachment: fixed;
+  color: #e5e7eb;
+  line-height: 1.6;
+  font-family: "Playfair Display", serif;
+  background-size: cover;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

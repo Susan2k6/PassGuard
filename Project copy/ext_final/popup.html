@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PassGuard Autofill</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 340px;
+            min-height: 200px;
+            font-family: 'Inter', sans-serif;
+            background: #0f0f1a;
+            color: #e2e8f0;
+        }
+
+        /* ── Header ──────────────────────────────────────────── */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px 12px;
+            background: linear-gradient(135deg, #1e1b4b, #2d1f6e);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .header-icon {
+            font-size: 1.3rem;
+        }
+
+        .header-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .header-sub {
+            font-size: 0.72rem;
+            color: #818cf8;
+            margin-top: 1px;
+        }
+
+        .header-right {
+            margin-left: auto;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 0.72rem;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .logout-btn:hover {
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        /* ── Domain pill ─────────────────────────────────────── */
+        .domain-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(99, 102, 241, 0.08);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .domain-name {
+            font-weight: 600;
+            color: #c7d2fe;
+        }
+
+        /* ── Credential cards ────────────────────────────────── */
+        .cred-list {
+            padding: 10px 10px 6px;
+        }
+
+        .cred-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(99, 102, 241, 0.18);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            transition: background .15s;
+        }
+
+        .cred-card:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .cred-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .cred-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .cred-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cred-app {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+
+        .cred-user {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fill-btn {
+            width: 100%;
+            padding: 9px;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.83rem;
+            font-family: 'Inter', sans-serif;
+            transition: transform .15s, box-shadow .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .fill-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+        }
+
+        .fill-btn:active {
+            transform: translateY(0);
+        }
+
+        .fill-btn.success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .fill-btn.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* ── States ──────────────────────────────────────────── */
+        .state {
+            padding: 28px 20px;
+            text-align: center;
+        }
+
+        .state-icon {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+        }
+
+        .state-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+        }
+
+        .state-sub {
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .open-btn {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 9px 20px;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.83rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .open-btn:hover {
+            opacity: .9;
+        }
+
+        .no-match-hint {
+            padding: 6px 10px 12px;
+            font-size: 0.73rem;
+            color: #475569;
+            text-align: center;
+        }
+
+        .all-section {
+            padding: 0 10px 10px;
+        }
+
+        .all-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 6px;
+            padding: 0 2px;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(99, 102, 241, 0.1);
+            margin: 4px 10px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.navbar {
+  background: var(--card);
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  background: rgba(1, 13, 47, 0.25);
+  backdrop-filter: blur(12px);
+
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border-bottom: 1px solid rgba(6, 4, 12, 0.2);
+  
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links a {
+  margin-left: 20px;
+  font-weight: 500;
+  color: var(--text);
+}
+.nav-links a:hover {
+  color: var(--primary);
+}
+.grid {
+  display: grid;
+  /* Stack cards vertically by default so each card appears one below the other */
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* Make navbar and links wrap on small screens and improve spacing */
+.navbar {
+  flex-wrap: wrap;
+}
+
+.nav-links a { margin: 8px 12px; }
+
+@media (max-width: 900px) {
+  .container { padding: 24px; }
+  .navbar { padding: 12px 20px; }
+  .nav-links { justify-content: center; width: 100%; margin-top: 8px; }
+}
+
+@media (max-width: 600px) {
+  .nav-links { justify-content: center; gap: 8px; }
+  .nav-links a { margin: 6px; font-size: 14px; }
+}
+
+/* Dashboard-specific styles */
+.dashboard-hero {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dashboard-hero .card {
+  padding: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.stat {
+  background: rgba(255,255,255,0.06);
+  padding: 14px;
+  border-radius: 10px;
+  text-align: center;
+  color: var(--text);
+}
+
+.stat h3 { font-size: 1.6rem; margin-bottom: 6px; }
+.stat p { color: var(--muted); margin:0; }
+
+.actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-primary { background: var(--primary); color: var(--text); padding: 10px 14px; border-radius: 8px; }
+.btn { background: rgba(255,255,255,0.08); color: var(--text); padding: 10px 14px; border-radius: 8px; }
+
+.recent-list .card { display:flex; justify-content:space-between; align-items:center; padding:12px; }
+.recent-list .meta { color: var(--muted); font-size: 0.95rem; }
+
+.strength-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.strength-row span { width: 80px; font-size:0.95rem; }
+.strength-bar { flex:1; height:10px; background: rgba(0,0,0,0.06); border-radius: 999px; overflow:hidden; }
+.strength-fill { height:100%; }
+.strength-fill.strong { background: var(--secondary); }
+.strength-fill.medium { background: #f59e0b; }
+.strength-fill.weak { background: var(--danger); }
+
+@media (max-width: 900px) {
+  .dashboard-hero { grid-template-columns: 1fr; }
+}
+
+/* Generator page layout */
+.generator-grid {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.generator-grid .card { flex: 1 1 480px; }
+.generator-grid .illustration { flex: 0 0 360px; }
+.generator-grid .illustration img { width: 100%; height: auto; display: block; }
+
+@media (max-width: 900px) {
+  .generator-grid { flex-direction: column-reverse; }
+  .generator-grid .illustration { width: 100%; max-width: 420px; }
+}
+
+/* ── Auth Navbar Elements ──────────────────────────────────────────────────── */
+.nav-auth {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 20px;
+}
+
+.nav-user {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.nav-logout-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(99, 102, 241, 0.5);
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: "Playfair Display", serif;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-logout-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.nav-login-link {
+  padding: 7px 16px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+
+.nav-login-link:hover {
+  opacity: 0.88;
+}
