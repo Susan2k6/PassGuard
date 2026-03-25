@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Password Analyzer – PassGuard</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/pages.css">
+  <style>
+    .ana-wrapper { max-width: 1000px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    .ana-hero { margin-bottom: 28px; }
+    .ana-hero h2 { font-size: 2rem; color: #0f172a; }
+    .ana-hero p  { color: #374151; margin-top: 4px; }
+
+    /* ── Glass card ─────────────────────────────────────── */
+    .ana-card {
+      background: rgba(255,255,255,0.88);
+      border-radius: 18px; padding: 28px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.6);
+      margin-bottom: 16px;
+    }
+    .ana-card-title {
+      font-size: 1rem; font-weight: 700; color: #6366f1;
+      text-transform: uppercase; letter-spacing: .06em; margin-bottom: 16px;
+    }
+
+    /* ── Input area ─────────────────────────────────────── */
+    .pw-input-wrap { position: relative; margin-bottom: 10px; }
+    .pw-input-wrap input {
+      width: 100%; padding: 14px 48px 14px 16px;
+      border-radius: 12px; border: 2px solid rgba(99,102,241,0.2);
+      font-size: 1.05rem; outline: none; background: #f8fafc;
+      font-family: "Playfair Display", serif; letter-spacing: .04em;
+      transition: border-color .2s, box-shadow .2s; margin-top: 0;
+    }
+    .pw-input-wrap input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99,102,241,0.12); }
+    .toggle-eye {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 1.2rem;
+      color: #6b7280; transition: color .15s;
+    }
+    .toggle-eye:hover { color: var(--primary); }
+
+    /* ── Big strength meter ──────────────────────────────── */
+    .big-meter { margin: 18px 0 10px; }
+    .meter-bar {
+      height: 12px; background: #e5e7eb; border-radius: 8px;
+      overflow: hidden; margin-bottom: 6px;
+    }
+    .meter-fill {
+      height: 100%; border-radius: 8px;
+      transition: width .5s cubic-bezier(.4,0,.2,1), background .5s;
+    }
+    .meter-labels {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: #9ca3af; font-weight: 600;
+    }
+
+    /* ── Score badge ─────────────────────────────────────── */
+    .score-row {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 18px; flex-wrap: wrap;
+    }
+    .score-pill {
+      font-size: 1.3rem; font-weight: 800;
+      padding: 8px 20px; border-radius: 12px;
+      transition: all .3s;
+    }
+    .score-pill.weak   { background: #fee2e2; color: #991b1b; }
+    .score-pill.medium { background: #fef3c7; color: #92400e; }
+    .score-pill.strong { background: #dcfce7; color: #166534; }
+
+    .crack-time-chip {
+      background: #ede9fe; color: #5b21b6;
+      border-radius: 10px; padding: 6px 14px;
+      font-size: 0.82rem; font-weight: 700;
+    }
+    .entropy-chip {
+      background: #e0f2fe; color: #0c4a6e;
+      border-radius: 10px; padding: 6px 14px;
+      font-size: 0.82rem; font-weight: 700;
+    }
+
+    /* ── Character breakdown ─────────────────────────────── */
+    .breakdown-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; margin-bottom: 16px;
+    }
+    @media (max-width: 600px) { .breakdown-grid { grid-template-columns: 1fr 1fr; } }
+    .breakdown-item {
+      background: #f8fafc; border-radius: 12px; padding: 12px;
+      text-align: center; border: 2px solid transparent;
+      transition: border-color .2s;
+    }
+    .breakdown-item.has { border-color: #22c55e; }
+    .breakdown-item.missing { border-color: #e5e7eb; opacity: .6; }
+    .breakdown-count { font-size: 1.4rem; font-weight: 800; color: #0f172a; }
+    .breakdown-label { font-size: 0.72rem; color: #6b7280; font-weight: 600; margin-top: 2px; }
+    .breakdown-icon  { font-size: 1.1rem; margin-bottom: 4px; }
+
+    /* ── Checks list ────────────────────────────────────── */
+    .checks-list { display: flex; flex-direction: column; gap: 8px; }
+    .check-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 10px;
+      background: #f8fafc; font-size: 0.88rem; font-weight: 500;
+    }
+    .check-row.pass { background: #f0fdf4; color: #166534; }
+    .check-row.fail { background: #fef2f2; color: #991b1b; }
+    .check-row.warn { background: #fffbeb; color: #92400e; }
+    .check-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* ── Suggestions ─────────────────────────────────────── */
+    .suggestion-list { display: flex; flex-direction: column; gap: 8px; }
+    .suggestion-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 14px; background: #fff7ed;
+      border-radius: 10px; border-left: 3px solid #f59e0b;
+    }
+    .suggestion-item.good { background: #f0fdf4; border-left-color: #22c55e; }
+    .suggestion-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .suggestion-text { font-size: 0.87rem; color: #374151; }
+
+    /* ── Common patterns ─────────────────────────────────── */
+    .pattern-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700; margin: 3px;
+      background: #fee2e2; color: #991b1b;
+    }
+
+    /* hidden until there's input */
+    .results-section { display: none; }
+    .results-section.visible { display: block; }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <h2 class="logo">
+    <a href="index.html" class="nav-brand"><i data-lucide="lock-keyhole"></i><span>PassGuard</span></a>
+  </h2>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="generator.html">Generator</a>
+    <a href="analyzer.html">Analyzer</a>
+    <a href="vault.html">Vault</a>
+  </div>
+</header>
+
+<div class="ana-wrapper">
+
+  <div class="ana-hero">
+    <h2><i data-lucide="shield-check"></i> Password Strength Analyzer</h2>
+    <p>Get a detailed security report on any password — instantly.</p>
+  </div>
+
+  <!-- Input Card -->
+  <div class="ana-card">
+    <div class="ana-card-title"><i data-lucide="key-round"></i> Enter Password</div>
+    <div class="pw-input-wrap">
+      <input type="password" id="passwordInput" placeholder="Type or paste a password to analyze…" autocomplete="off">
+      <button class="toggle-eye" id="toggleEye" title="Show / hide"><i data-lucide="eye"></i></button>
+    </div>
+    <p style="font-size:.78rem;color:#9ca3af;margin:0;">Your password stays on this device and is never transmitted.</p>
+
+    <!-- Animated strength meter -->
+    <div class="big-meter">
+      <div class="meter-bar">
+        <div class="meter-fill" id="meterFill" style="width:0%;background:#e5e7eb;"></div>
+      </div>
+      <div class="meter-labels">
+        <span>Very Weak</span><span>Weak</span><span>Fair</span><span>Strong</span><span>Very Strong</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results (shown after typing) -->
+  <div class="results-section" id="resultsSection">
+
+    <!-- Score + meta -->
+    <div class="ana-card">
+      <div class="ana-card-title"><i data-lucide="bar-chart-2"></i> Strength Score</div>
+      <div class="score-row">
+        <div class="score-pill" id="scorePill">—</div>
+        <div class="crack-time-chip" id="crackChip">—</div>
+        <div class="entropy-chip" id="entropyChip">—</div>
+      </div>
+
+      <!-- Character breakdown -->
+      <div class="ana-card-title" style="margin-top:8px;"><i data-lucide="type"></i> Character Breakdown</div>
+      <div class="breakdown-grid">
+        <div class="breakdown-item" id="bdUpper">
+          <div class="breakdown-icon"><i data-lucide="arrow-up-a-z"></i></div>
+          <div class="breakdown-count" id="bdUpperCount">0</div>
+          <div class="breakdown-label">Uppercase</div>
+        </div>
+        <div class="breakdown-item" id="bdLower">
+          <div class="breakdown-icon"><i data-lucide="arrow-down-a-z"></i></div>
+          <div class="breakdown-count" id="bdLowerCount">0</div>
+          <div class="breakdown-label">Lowercase</div>
+        </div>
+        <div class="breakdown-item" id="bdNum">
+          <div class="breakdown-icon"><i data-lucide="hash"></i></div>
+          <div class="breakdown-count" id="bdNumCount">0</div>
+          <div class="breakdown-label">Numbers</div>
+        </div>
+        <div class="breakdown-item" id="bdSym">
+          <div class="breakdown-icon"><i data-lucide="asterisk"></i></div>
+          <div class="breakdown-count" id="bdSymCount">0</div>
+          <div class="breakdown-label">Symbols</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security checks -->
+    <div class="ana-card">
+      <div class="ana-card-title"><i data-lucide="check-circle-2"></i> Security Checks</div>
+      <div class="checks-list" id="checksList"></div>
+    </div>
+
+    <!-- Detected patterns -->
+    <div class="ana-card" id="patternsCard" style="display:none;">
+      <div class="ana-card-title"><i data-lucide="alert-triangle"></i> Detected Patterns</div>
+      <div id="patternTags"></div>
+    </div>
+
+    <!-- Suggestions / feedback -->
+    <div class="ana-card">
+      <div class="ana-card-title"><i data-lucide="lightbulb"></i> Suggestions</div>
+      <div class="suggestion-list" id="suggestionList"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="scripts/lucide-init.js"></script>
+<script src="scripts/auth.js"></script>
+<script>requireAuth();</script>
+<script src="scripts/analyzer.js"></script>
+
+</body>
+</html>
